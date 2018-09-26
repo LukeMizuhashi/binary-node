@@ -70,6 +70,52 @@ module.exports = class BinaryNode {
     this.right = right;
   }
 
+  isRightChild() {
+    let result = false
+    if (this.parent) {
+      result = this.parent.right === this;
+    }
+    return result;
+  }
+
+  isLeftChild() {
+    let result = false
+    if (this.parent) {
+      result = this.parent.left === this;
+    }
+    return result;
+  }
+
+  rotateRight() {
+    if (!this.isLeftChild()) {
+      throw new Error(
+        'Can not rotate right: node is not a left child of its parent.'
+      );
+    }
+
+    let oldParent = this.parent;
+    let movingNode = this.right;
+
+    oldParent.parent = this;
+    oldParent.left = movingNode;
+    this.right = oldParent;
+  }
+
+  rotateLeft() {
+    if (!this.isRightChild()) {
+      throw new Error(
+        'Can not rotate left: node is not a right child of its parent.'
+      );
+    }
+
+    let oldParent = this.parent;
+    let movingNode = this.left;
+
+    oldParent.parent = this;
+    oldParent.right = movingNode;
+    this.left = oldParent;
+  }
+
   getSibling() {
     let sibling = null;
     if (this.parent) {

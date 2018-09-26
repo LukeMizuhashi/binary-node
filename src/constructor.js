@@ -70,6 +70,18 @@ module.exports = class BinaryNode {
     this.right = right;
   }
 
+  getSibling() {
+    let sibling = null;
+    if (this.parent) {
+      if (this.parent.left === this) {
+        sibling = this.parent.right;
+      } else {
+        sibling = this.parent.left;
+      }
+    }
+    return sibling;
+  }
+
   set(...args) {
 
     let key = undefined;

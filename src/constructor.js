@@ -96,8 +96,10 @@ module.exports = class BinaryNode {
     let oldParent = this.parent;
     let movingNode = this.right;
 
-    oldParent.parent = this;
     oldParent.left = movingNode;
+    movingNode.parent = oldParent;
+
+    oldParent.parent = this;
     this.right = oldParent;
   }
 
@@ -111,8 +113,10 @@ module.exports = class BinaryNode {
     let oldParent = this.parent;
     let movingNode = this.left;
 
-    oldParent.parent = this;
     oldParent.right = movingNode;
+    movingNode.parent = oldParent;
+
+    oldParent.parent = this;
     this.left = oldParent;
   }
 

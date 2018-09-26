@@ -8,7 +8,7 @@ const describeReplaceWith = require('./replaceWith/description.js');
 const describeSet = require('./set/description.js');
 const describeCompare = require('./compare/description.js');
 
-describe('BinarySearchTree',() => {
+describe('BinaryNode',() => {
 
   describeConstructor();
   describe('BinaryNode.isLeaf',describeIsLeaf);

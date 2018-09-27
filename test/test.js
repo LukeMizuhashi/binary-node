@@ -10,8 +10,8 @@ const describeGetSibling = require('./getSibling/description.js');
 const describeRotateLeft = require('./rotateLeft/description.js');
 const describeRotateRight = require('./rotateRight/description.js');
 const describeIsolate = require('./isolate/description.js');
+const describeValue = require('./value/description.js');
 // const describeReplaceWith = require('./replaceWith/description.js');
-// const describeSet = require('./set/description.js');
 
 describe('BinaryNode',() => {
 
@@ -24,7 +24,7 @@ describe('BinaryNode',() => {
   describe('BinaryNode.rotateLeft',describeRotateLeft);
   describe('BinaryNode.rotateRight',describeRotateRight);
   describe('BinaryNode.isolate',describeIsolate);
+  describe('BinaryNode.value',describeValue);
   // describe('BinaryNode.replaceWith',describeReplaceWith);
-  // describe('BinaryNode.set',describeSet);
 });
 

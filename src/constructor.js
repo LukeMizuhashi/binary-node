@@ -14,8 +14,11 @@ module.exports = class BinaryNode {
         options.allowsDuplicates : false;
 
     if (this.allowsDuplicates) {
-      this._value = [];
-      this.value = options.value; // Defaults to empty array
+      this._value = []; // Defaults to empty array
+
+      if (options.hasOwnProperty('value')) {
+        this.value = options.value;
+      }
     } else {
       this.value = options.value; // Defaults to undefined
     }
@@ -184,15 +187,17 @@ module.exports = class BinaryNode {
     return this._value;
   }
 
-  replaceWith(replacementNode) {
-    const left = this.left;
-    const right = this.right;
-    Object.keys(replacementNode).forEach((key) => {
-      this[key] = replacementNode[key];
-    });
-    this.left = left;
-    this.right = right;
-  }
+  // TODO Consider if we really need this
+  //
+  // replaceWith(replacementNode) {
+  //   // const left = this.left;
+  //   // const right = this.right;
+  //   Object.keys(replacementNode).forEach((key) => {
+  //     this[key] = replacementNode[key];
+  //   });
+  //   // this.left = left;
+  //   // this.right = right;
+  // }
 
   // TODO Move to OrderedBinaryNode
   //

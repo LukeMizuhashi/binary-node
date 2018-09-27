@@ -47,8 +47,19 @@ module.exports = () => {
     uut = new BinaryNode();
     assert.strictEqual(uut.value,undefined);
 
-    uut = new BinaryNode({ key: 'foo', value: 'bar' });
+    uut = new BinaryNode({ value: 'bar' });
     assert.strictEqual(uut.value,'bar');
+
+    
+    const options = { allowsDuplicates: true };
+
+    uut = new BinaryNode(options);
+    assert(Array.isArray(uut.value));
+    assert.strictEqual(uut.value.length,0);
+
+    uut = new BinaryNode({ allowsDuplicates: true, value: 'bar' });
+    assert(Array.isArray(uut.value));
+    assert.strictEqual(uut.value.length,1);
  }); 
 
  it("Defaults BinaryNode.parent to null",() => {

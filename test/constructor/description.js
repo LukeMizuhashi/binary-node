@@ -28,6 +28,16 @@ module.exports = () => {
  //    assert.strictEqual(uut.key,'foo');
  // }); 
 
+ it("Sets BinaryNode.value from options.value appropriately",() => {
+    let uut;
+
+    uut = new BinaryNode();
+    assert.strictEqual(uut.value,undefined);
+
+    uut = new BinaryNode({ value: 'bar' });
+    assert.strictEqual(uut.value,'bar');
+ }); 
+
  it("Defaults BinaryNode.parent to null",() => {
    let uut = new BinaryNode();
    assert.strictEqual(uut.parent,null);

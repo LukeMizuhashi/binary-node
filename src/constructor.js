@@ -2,26 +2,7 @@ module.exports = class BinaryNode {
   constructor(options) {
     options = options || {};
 
-    // TODO Move this to a OrderedBinaryNode
-    //
-    // if (options.comparator) {
-    //   this.compare = options.comparator;
-    //   this.compare.bind(this);
-    // }
-    // this.key = options.key; // Defaults to undefined
-
-    this.allowsDuplicates = options.hasOwnProperty('allowsDuplicates') ?
-        options.allowsDuplicates : false;
-
-    if (this.allowsDuplicates) {
-      this._value = []; // Defaults to empty array
-
-      if (options.hasOwnProperty('value')) {
-        this.value = options.value;
-      }
-    } else {
-      this.value = options.value; // Defaults to undefined
-    }
+    this.value = options.value; // Defaults to undefined
 
     this.parent = null; // Always default this.parent to null. Let the caller
                         // set this.parent indirectly by passing this BinaryNode
@@ -31,16 +12,6 @@ module.exports = class BinaryNode {
     this.left = options.left || null;
     this.right = options.right || null;
   }
-
-  // TODO Move these to some tree structure
-  //
-  // isRoot() {
-  //   return this.parent === null;
-  // }
-
-  // isLeaf() {
-  //   return (this.left === null && this.right === null);
-  // }
 
   set left(child) {
     if (this._left) {
@@ -174,46 +145,5 @@ module.exports = class BinaryNode {
       }
     }
   }
-
-  set value(value) {
-    if (this.allowsDuplicates) {
-      this._value.push(value);
-    } else {
-      this._value = value;
-    }
-  }
-
-  get value() {
-    return this._value;
-  }
-
-  // TODO Consider if we really need this
-  //
-  // replaceWith(replacementNode) {
-  //   // const left = this.left;
-  //   // const right = this.right;
-  //   Object.keys(replacementNode).forEach((key) => {
-  //     this[key] = replacementNode[key];
-  //   });
-  //   // this.left = left;
-  //   // this.right = right;
-  // }
-
-  // TODO Move to OrderedBinaryNode
-  //
-  // compare(key) {
-  //   if (key < this.key) {
-  //     return -1;
-  //   } else if (key == this.key) {
-  //     return 0;
-  //   } else if (key > this.key) {
-  //     return 1;
-  //   } else {
-  //     throw new Error(
-  //       `${key} is neither less than, greater than, nor equal to ${this.key}`
-  //     );
-  //   }
-  // }
-
 };
 

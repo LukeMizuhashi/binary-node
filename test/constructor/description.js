@@ -5,19 +5,6 @@ module.exports = () => {
     });
   });
 
- it("Sets BinaryNode.allowsDuplicates from options.allowsDuplicates appropriately",() => {
-    let uut;
-
-    uut = new BinaryNode();
-    assert.strictEqual(uut.allowsDuplicates,false);
-
-    uut = new BinaryNode({ allowsDuplicates: true });
-    assert.strictEqual(uut.allowsDuplicates,true);
-
-    uut = new BinaryNode({ allowsDuplicates: false });
-    assert.strictEqual(uut.allowsDuplicates,false);
- }); 
-
  // it("Sets BinaryNode.compare from options.comparator appropriately",() => {
  //    let uut;
  //    let customComparator = () => {};
@@ -40,27 +27,6 @@ module.exports = () => {
  //    uut = new BinaryNode({ key: 'foo' });
  //    assert.strictEqual(uut.key,'foo');
  // }); 
-
- it("Sets BinaryNode.value from options.value appropriately",() => {
-    let uut;
-
-    uut = new BinaryNode();
-    assert.strictEqual(uut.value,undefined);
-
-    uut = new BinaryNode({ value: 'bar' });
-    assert.strictEqual(uut.value,'bar');
-
-    
-    const options = { allowsDuplicates: true };
-
-    uut = new BinaryNode(options);
-    assert(Array.isArray(uut.value));
-    assert.strictEqual(uut.value.length,0);
-
-    uut = new BinaryNode({ allowsDuplicates: true, value: 'bar' });
-    assert(Array.isArray(uut.value));
-    assert.strictEqual(uut.value.length,1);
- }); 
 
  it("Defaults BinaryNode.parent to null",() => {
    let uut = new BinaryNode();

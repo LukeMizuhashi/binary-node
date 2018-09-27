@@ -2,62 +2,186 @@ module.exports = class BinaryNode {
   constructor(options) {
     options = options || {};
 
+    // TODO Move this to a OrderedBinaryNode
+    //
+    // if (options.comparator) {
+    //   this.compare = options.comparator;
+    //   this.compare.bind(this);
+    // }
+    // this.key = options.key; // Defaults to undefined
+
     this.allowsDuplicates = options.hasOwnProperty('allowsDuplicates') ?
         options.allowsDuplicates : false;
 
-    if (options.comparator) {
-      this.compare = options.comparator;
-      this.compare.bind(this);
+    if (this.allowsDuplicates) {
+      this._value = [];
+      this.value = options.value; // Defaults to empty array
+    } else {
+      this.value = options.value; // Defaults to undefined
     }
 
-    this.key = options.key; // Defaults to undefined
-    this.value = options.value || null;
+    this.parent = null; // Always default this.parent to null. Let the caller
+                        // set this.parent indirectly by passing this BinaryNode
+                        // instance to BinaryNode.left or BinaryNode.right on 
+                        // the parent later
 
     this.left = options.left || null;
-    this.right = options.right|| null;
-    this.parent = options.parent || null;
+    this.right = options.right || null;
   }
 
-  isLeaf() {
-    return this.value === null;
+  // TODO Move these to some tree structure
+  //
+  // isRoot() {
+  //   return this.parent === null;
+  // }
+
+  // isLeaf() {
+  //   return (this.left === null && this.right === null);
+  // }
+
+  set left(child) {
+    if (this._left) {
+      this._left.parent = null;
+    }
+
+    this._left = child;
+    if (child) {
+      child.parent = this;
+    }
   }
 
-  destroy() {
-    if (this.isLeaf()) {
+  get left() {
+    return this._left;
+  }
+
+  set right(child) {
+    if (this._right) {
+      this._right.parent = null;
+    }
+
+    this._right = child;
+    if (child) {
+      child.parent = this;
+    }
+  }
+
+  get right() {
+    return this._right;
+  }
+
+  isLeftChild() {
+    let result = false
+    if (this.parent) {
+      result = this.parent.left === this;
+    }
+    return result;
+  }
+
+  isRightChild() {
+    let result = false
+    if (this.parent) {
+      result = this.parent.right === this;
+    }
+    return result;
+  }
+
+  getSibling() {
+    let sibling = undefined;
+    if (this.isLeftChild()) {
+      sibling = this.parent.right;
+    } else if(this.isRightChild()) {
+      sibling = this.parent.left;
+    }
+    return sibling;
+  }
+
+  rotateLeft() {
+    if (!this.isRightChild()) {
       throw new Error(
-        'Called BinaryNode.destroy on a leaf node. Leaf nodes can only be '
-      + 'converted to non-leaf nodes by setting their value via calling '
-      + 'BinaryNode.set'
+        'Can not rotate left: node is not the right child of its parent.'
       );
     }
 
+    let oldParent = this.parent;
+    let grandParent = oldParent.parent;
+    let wasLeftGrandChild = oldParent.isLeftChild();
+    let movingNode = this.left;
+
+    this.left = oldParent;
+    oldParent.right = movingNode;
+
+    if (grandParent) {
+      this.parent = grandParent;
+      if (wasLeftGrandChild) {
+        grandParent._left = this;
+      } else {
+        grandParent._right = this;
+      }
+    } else {
+      this.parent = null;
+    }
+  }
+
+  rotateRight() {
+    if (!this.isLeftChild()) {
+      throw new Error(
+        'Can not rotate right: node is not a left child of its parent.'
+      );
+    }
+
+    let oldParent = this.parent;
+    let grandParent = oldParent.parent;
+    let wasLeftGrandChild = oldParent.isLeftChild();
+    let movingNode = this.right;
+
+    this.right = oldParent;
+    oldParent.left = movingNode;
+
+    if (grandParent) {
+      this.parent = grandParent;
+      if (wasLeftGrandChild) {
+        grandParent._left = this;
+      } else {
+        grandParent._right = this;
+      }
+    } else {
+      this.parent = null;
+    }
+  }
+
+  isolate() {
     if (this.left) {
-      this.left.parent = new BinaryNode({
-        copmarator: this.compare,
-        allowsDuplicates: this.allowsDuplicates,
-      });
+      this.left.parent = null;
+      this.left = new BinaryNode();
     }
 
     if (this.right) {
-      this.left.parent = new BinaryNode({
-        copmarator: this.compare,
-        allowsDuplicates: this.allowsDuplicates,
-      });
+      this.right.parent = null; 
+      this.right = new BinaryNode();
     }
 
     if (this.parent) {
-      const leafNode = new BinaryNode({
-        copmarator: this.compare,
-        allowsDuplicates: this.allowsDuplicates,
-      });
-      if (this.parent.left === this) {
+
+      const leafNode = new BinaryNode();
+
+      if (this.isLeftChild()) {
         this.parent.left = leafNode;
       } else {
         this.parent.right = leafNode;
       }
     }
+  }
 
-    delete this;
+  set value(value) {
+    if (this.allowsDuplicates) {
+      this._value.push(value);
+    } else {
+      this._value = value;
+    }
+  }
+
+  get value() {
+    return this._value;
   }
 
   replaceWith(replacementNode) {
@@ -70,130 +194,21 @@ module.exports = class BinaryNode {
     this.right = right;
   }
 
-  isRightChild() {
-    let result = false
-    if (this.parent) {
-      result = this.parent.right === this;
-    }
-    return result;
-  }
-
-  isLeftChild() {
-    let result = false
-    if (this.parent) {
-      result = this.parent.left === this;
-    }
-    return result;
-  }
-
-  rotateRight() {
-    if (!this.isLeftChild()) {
-      throw new Error(
-        'Can not rotate right: node is not a left child of its parent.'
-      );
-    }
-
-    let oldParent = this.parent;
-    let movingNode = this.right;
-
-    oldParent.left = movingNode;
-    movingNode.parent = oldParent;
-
-    oldParent.parent = this;
-    this.right = oldParent;
-  }
-
-  rotateLeft() {
-    if (!this.isRightChild()) {
-      throw new Error(
-        'Can not rotate left: node is not a right child of its parent.'
-      );
-    }
-
-    let oldParent = this.parent;
-    let movingNode = this.left;
-
-    oldParent.right = movingNode;
-    movingNode.parent = oldParent;
-
-    oldParent.parent = this;
-    this.left = oldParent;
-  }
-
-  getSibling() {
-    let sibling = null;
-    if (this.parent) {
-      if (this.parent.left === this) {
-        sibling = this.parent.right;
-      } else {
-        sibling = this.parent.left;
-      }
-    }
-    return sibling;
-  }
-
-  set(...args) {
-
-    let key = undefined;
-    let value = undefined;
-    if (args.length == 1) {
-      key = null;
-      value = args[0];
-    } else if (args.length == 2) {
-      key = args[0];
-      value = args[1];
-    } else {
-      throw new Error(
-        'BinaryNode.set must be called as either BinaryNode.set(value) or '
-      + 'BinaryNode.set(key,value)'
-      );
-    }
-
-    if (key !== undefined && key !== null) {
-      if (!this.isLeaf()) {
-        throw new Error('Can not set key of non-leaf BinaryNode.');
-      }
-      this.key = key;
-    }
-
-    if (this.isLeaf()) {
-      this.left= new BinaryNode({
-        allowsDuplicates: this.allowsDuplicates,
-        comparator: this.compare,
-      });
-      this.left.parent = this;
-
-      this.right = new BinaryNode({
-        allowsDuplicates: this.allowsDuplicates,
-        comparator: this.compare,
-      });
-      this.right.parent = this;
-      
-      if (this.allowsDuplicates) {
-        this.value = [];
-      }
-    }
-
-    if (this.allowsDuplicates) {
-      this.value.push(value);
-    } else {
-      this.value = value;
-    }
-  }
-
-  compare(key) {
-    if (key < this.key) {
-      return -1;
-    } else if (key == this.key) {
-      return 0;
-    } else if (key > this.key) {
-      return 1;
-    } else {
-      throw new Error(
-        `${key} is neither less than, greater than, nor equal to ${this.key}`
-      );
-    }
-  }
+  // TODO Move to OrderedBinaryNode
+  //
+  // compare(key) {
+  //   if (key < this.key) {
+  //     return -1;
+  //   } else if (key == this.key) {
+  //     return 0;
+  //   } else if (key > this.key) {
+  //     return 1;
+  //   } else {
+  //     throw new Error(
+  //       `${key} is neither less than, greater than, nor equal to ${this.key}`
+  //     );
+  //   }
+  // }
 
 };
 
